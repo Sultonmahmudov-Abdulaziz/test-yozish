@@ -36,29 +36,21 @@ class RegisterForm(forms.ModelForm):
 
 
 
-class LoginForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(LoginForm, self).__init__(*args, **kwargs)
-        self.fields['password'] = forms.CharField(widget=forms.PasswordInput())
-
-    class Meta:
-        model=User
-        fields=('username', 'password')
+class LoginForm(forms.Form):
+    username = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput())
 
     def clean_username(self):
-        username = self.cleaned_data.get('username')
-        if not User.objects.filter(username=username).exists():
-            raise forms.ValidationError("Bu foydalanuvchi nomi mavjud emas")
+        username=self.cleaned_data['username']
+
+
+        if len(username) <5 or len(username) >30:
+            raise forms.ValidationError("Username 5 va 30 orasida bolishi lozim")
+        
+
         return username
-
-
-    def clean(self):
-        cleaned_data = super().clean()
-        username = cleaned_data.get("username")
-        password = cleaned_data.get("password")
         
-        user =authenticate(username=username, password=password)
-        if not user:
-            raise forms.ValidationError("Foydalanuvchi nomi yoki parol xato")
-        
-        return cleaned_data
+   
+    
+
+   
